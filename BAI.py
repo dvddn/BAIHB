@@ -28,4 +28,5 @@ class BAI(object):
 
     def run_arm(self, i):
         self.arms[i].run()
+        # testing commit
 
