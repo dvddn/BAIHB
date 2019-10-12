@@ -64,7 +64,7 @@ class Worker(object):
                 pickle.dump(bst, handle, protocol=pickle.HIGHEST_PROTOCOL)
         preds = bst.predict(d_val) - 0.5
         results = pd.DataFrame(data={'preds':preds, 'truth':val_y.apply(
-                lambda x: -1 id x==0 else 1)})
+                lambda x: -1 if x==0 else 1)})
         results['acc'] = results.preds*results.truth
         if return_round:
             return (results.acc>0).mean(), best_iter

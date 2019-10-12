@@ -11,7 +11,7 @@ class HyperBand(object):
         self.eta = eta
         self.s_max = int(math.log(self.R, self.eta))
         self.B = (self.s_max + 1)*self.R
-        self.mode = model
+        self.model = model
         self.config_gen = config_generator(params)
         self.evals = pd.DataFrame()
         print("HB object created!")
@@ -31,14 +31,14 @@ class HyperBand(object):
         print("Running HB")
         for s in np.arange(self.s_max, 0, -1):
             n = self.B*(self.eta**s)/(self.R*(s+1))//1
-            r = self.R*self.eta**(s)
+            r = self.R*self.eta**(-s)
             T = self.successive_halvings(n,r,s)
-            os.popen(
-                    r'del /Q PATH\+')
+            os.popen(r'del /Q .\MODELS\*')
         return
     
     def successive_halvings(self, n, r, s):
         T = self.get_config(n)
+        #print(T.conf)
         L = None
         r_i = 0
         for i in range(s):
@@ -46,8 +46,8 @@ class HyperBand(object):
             old_r = r_i
             r_i = r * (self.eta ** i)
             d_i = r_i - old_r
-            T.L = T.apply(lambda x: self.model.eval(
-                x.conf, d_i, old_r, x.Id), axis=1)
+            T.L = T.apply(lambda x: self.model.run(x.conf, d_i, old_r, False, x.Id), axis=1)
+            T = self.top_k(T, int(n_i/self.eta))
         self.evals = pd.concat([self.evals, T])
         return T
 

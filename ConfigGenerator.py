@@ -1,10 +1,10 @@
 import pandas as pd
-from scipy.stats import unform
+from scipy.stats import uniform
 
 class config_generator(object):
 
     def __init__(self, params):
-        if(type(params)!=type({}):
+        if(type(params)!=type({})):
             raise ValueError('params must be a dict!')
         self.params = params
         self.config_counter = 0 #  THINK ABOUT MAKING STATIC
