@@ -7,28 +7,33 @@ from Arm import Arm
 import pickle
 
 class BAI(object):
-    def __init__(self, n, params, R, eta):
+    def __init__(self, n, params, interval, R, eta):
         self.n = n
-        self.arms = []*n
+        self.arms = [None]*n
         self.best = 0
 
-        space = np.logspace(np.log10(params['eta'][0]), np.log10(params['eta'][1]), self.n)
+        space = np.logspace(np.log10(interval[0]), np.log10(interval[1]), self.n+1)
         data = self.get_data()
         
         for i in range(n):
-            params2 = params
-            params2[eta] = [space[i],space[i+1]]
+            params2 = params.copy()
+            params2.update({'eta':uniform(space[i],space[i+1]-space[i])})
             model = Worker(params2, data)
+            print('Arm ', i, 'will contain Hyperband object with eta in [', space[i],',',space[i+1],']')
             self.arms[i] = Arm(HyperBand(model, params, R, eta), 0.5, 1, 1, 1)
         return
 
     def get_next_arm(self):
-        return self.probabilities.index(max(self.probabilities()))
+        maxproba = [0,-1]
+        for i in range(self.n):
+            if self.arms[i].probability > maxproba[0]:
+                maxproba = [self.arms[i].probability, i]
+        return maxproba[1]
 
     def run_arm(self, i):
+        print("RUNNING ARM ", i)
         self.arms[i].hb.run()
         self.arms[i].compute_posterior()
-        print("RUNNING ARM ", i)
         if (max(self.arms[i].hb.evals['L']) > self.best):
             self.best = max(self.arms[i].hb.evals['L'])
             [x.compute_probability(self.best) for x in self.arms]
@@ -36,6 +41,7 @@ class BAI(object):
         else:
             self.arms[i].compute_probability(self.best)
         
+        print(self.arms[i].hb.evals)
         return
     
     def run_n(self, n):

@@ -31,6 +31,10 @@ class Arm(object):
         self.nu1 = self.nu0 + num
         S = np.sum((losses-meanloss)**2)
         self.sigma2_1 = (self.nu0*self.sigma2_0 + S + self.n0*num/(self.n0 + num)*(self.mu0-meanloss)**2)/self.nu1
-        
+        return
+    
     def compute_probability(self,currmax):
-        self.probability = 1 - t.cdf(currmax, self.nu1, self.mu1, (self.sigma2_1*(self.n1+1)/self.n1)**0.5)
+        if self.hb.evals.shape[0] > 0:
+            self.probability = 1 - t.cdf(currmax, self.nu1, self.mu1, (self.sigma2_1*(self.n1+1)/self.n1)**0.5)
+        print("New Probability of improvement: ", self.probability)
+        return

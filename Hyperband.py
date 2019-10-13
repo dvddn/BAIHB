@@ -29,7 +29,7 @@ class HyperBand(object):
 
     def run(self):
         print("Running HB")
-        for s in np.arange(self.s_max, 0, -1):
+        for s in np.arange(self.s_max, -1, -1):
             n = self.B*(self.eta**s)/(self.R*(s+1))//1
             r = self.R*self.eta**(-s)
             T = self.successive_halvings(n,r,s)
@@ -41,13 +41,14 @@ class HyperBand(object):
         #print(T.conf)
         L = None
         r_i = 0
-        for i in range(s):
+        for i in range(s+1):
             n_i = n * (self.eta ** (-i)) // 1
             old_r = r_i
             r_i = r * (self.eta ** i)
             d_i = r_i - old_r
             T.L = T.apply(lambda x: self.model.run(x.conf, d_i, old_r, False, x.Id), axis=1)
-            T = self.top_k(T, int(n_i/self.eta))
+            if i < s:
+                T = self.top_k(T, int(n_i/self.eta))
         self.evals = pd.concat([self.evals, T])
         return T
 

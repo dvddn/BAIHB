@@ -32,12 +32,12 @@ class Worker(object):
             print('Running XGB, id =', Id, ' budget: ', int(d)*30 )
             bst = xgb.train(params=t, dtrain=d_train, num_boost_round=int(d)*30, 
                             evals=evallist, early_stopping_rounds=early, 
-                            verbose_eval=True, xgb_model=bst)
+                            verbose_eval=False, xgb_model=bst)
         except:
             print('Running XGB, id =', Id, ' budget: ', int(r+d)*30 )
             bst = xgb.train(params=t, dtrain=d_train, num_boost_round=int(r+d)*30, 
                             evals=evallist, early_stopping_rounds=early, 
-                            verbose_eval=True)
+                            verbose_eval=False)
             best_iter = bst.attr('best_iteration')
             if best_iter is None:
                 best_iter = int(r+d)*100
