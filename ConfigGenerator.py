@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from scipy.stats import uniform
 
 class config_generator(object):
@@ -40,4 +41,17 @@ class discrete_uniform(object):
             return self.disc
         else:
             return uniform(self.min, self.range).rvs()
-    
+	    
+ 
+class log_uniform():        
+    def __init__(self, a=-1, b=0, base=10):
+        self.loc = a
+        self.scale = b - a
+        self.base = base
+
+    def rvs(self, size=None, random_state=None):
+        unif = uniform(loc=self.loc, scale=self.scale)
+        if size is None:
+            return np.power(self.base, unif.rvs(random_state=random_state))
+        else:
+            return np.power(self.base, unif.rvs(size=size, random_state=random_state))    

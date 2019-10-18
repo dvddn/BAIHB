@@ -2,6 +2,7 @@ from Hyperband import HyperBand
 from Worker_NEW import Worker
 from ConfigGenerator import config_generator
 from ConfigGenerator import discrete_uniform
+from ConfigGenerator import log_uniform
 import pandas as pd
 import numpy as np
 from scipy.stats import uniform, randint
@@ -17,16 +18,17 @@ def main():
               'colsample_by_tree': uniform(0.5,0.5),
               'gamma': discrete_uniform(0, 0, 5, 0.3),
               'lambda':discrete_uniform(0,0,5,0.1),
-              'alpha': discrete_uniform(0,0,5,0.3)}
+              'alpha': discrete_uniform(0,0,5,0.3),
+              'eta': log_uniform(-3,-0.30103)}
     eta_interval = [0.001,0.5]
  
-    #model = Worker(params, data)
-    #hb = HyperBand(model, params, R=9)
-    #hb.run_n(2)
+    model = Worker(params, data)
+    hb = HyperBand(model, params, R=27)
+    hb.run_n(20)
     #print(hb.evals)
-    baihb = BAI(5,params,eta_interval,27,3.0,0.3)
-    baihb.run_n(10)
-    with open('results.pkl', 'wb') as handle:
-        pickle.dump(baihb, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #baihb = BAI(5,params,eta_interval,27,3.0,0.3)
+    #baihb.run_n(10)
+    with open('results_log.pkl', 'wb') as handle:
+        pickle.dump(hb, handle, protocol=pickle.HIGHEST_PROTOCOL)
 if __name__ == '__main__':
     main()
