@@ -6,12 +6,12 @@ Created on Wed Sep 11 16:58:19 2019
 """
 from Hyperband import HyperBand
 import numpy as np
-from scipy.stats import t
+from scipy.stats import norm, invgamma
 
 class Arm(object):
     def __init__(self,hb, mu, n, nu, sigma2):
         self.hb = hb
-        self.probability = 100
+        self.improvement = 100
         self.mu0 = mu
         self.n0 = n
         self.nu0 = nu
@@ -33,8 +33,11 @@ class Arm(object):
         self.sigma2_1 = (self.nu0*self.sigma2_0 + S + self.n0*num/(self.n0 + num)*(self.mu0-meanloss)**2)/self.nu1
         return
     
-    def compute_probability(self,currmax):
-        if self.hb.evals.shape[0] > 0:
-            self.probability = 1 - t.cdf(currmax, self.nu1, self.mu1, (self.sigma2_1*(self.n1+1)/self.n1)**0.5)
-        print("New Probability of improvement: ", self.probability)
+    def compute_probability(self, currmax):
+        std = invgamma(a=self.nu1/2).rvs()
+        mean = norm(self.mu1, std)
+        self.improvement = self.expected_improvement(currmax,mean,std)
         return
+    
+    def expected_improvement(currmax, mean, std):
+        return std*norm.pdf((mean-currmax)/std) - abs(mean-currmax)*norm.cdf((mean-currmax)/std)

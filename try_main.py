@@ -8,7 +8,7 @@ from scipy.stats import uniform, randint
 import time
 import pickle 
 import xgboost as xgb
-from BAI_greedy import BAI
+from BAI import BAI
 
 def main():
     data = pickle.load(open("mydata.p", "rb"))
@@ -24,9 +24,9 @@ def main():
     #hb = HyperBand(model, params, R=9)
     #hb.run_n(2)
     #print(hb.evals)
-    baihb = BAI(5,params,eta_interval,27,3.0,0.3)
-    baihb.run_n(10)
-    with open('results.pkl', 'wb') as handle:
+    baihb = BAI(5,params,eta_interval,3,3.0)
+    baihb.run_n(2)
+    with open('results_TS.pkl', 'wb') as handle:
         pickle.dump(baihb, handle, protocol=pickle.HIGHEST_PROTOCOL)
 if __name__ == '__main__':
     main()
