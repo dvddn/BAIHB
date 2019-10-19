@@ -5,6 +5,7 @@ from Worker_NEW import Worker
 import numpy as np
 from Arm import Arm
 import pickle
+from scipy.stats import uniform
 
 class BAI(object):
     def __init__(self, n, params, interval, R, eta):
@@ -24,23 +25,22 @@ class BAI(object):
         return
 
     def get_next_arm(self):
-        maxproba = [0,-1]
+        maxproba = [-1,-1]
         for i in range(self.n):
-            if self.arms[i].probability > maxproba[0]:
-                maxproba = [self.arms[i].probability, i]
+            if self.arms[i].improvement > maxproba[0]:
+                maxproba = [self.arms[i].improvement, i]
         return maxproba[1]
 
     def run_arm(self, i):
         print("RUNNING ARM ", i)
         self.arms[i].hb.run()
         self.arms[i].compute_posterior()
+        
         if (max(self.arms[i].hb.evals['L']) > self.best):
             self.best = max(self.arms[i].hb.evals['L'])
-            [x.compute_probability(self.best) for x in self.arms]
-
-        else:
-            self.arms[i].compute_probability(self.best)
+            print("NEW BEST: ", self.best)
         
+        [x.compute_probability(self.best) for x in self.arms]
         print(self.arms[i].hb.evals)
         return
     

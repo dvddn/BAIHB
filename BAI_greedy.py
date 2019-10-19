@@ -3,7 +3,7 @@ from Hyperband import HyperBand
 from Worker_NEW import Worker
 #from KDE import DensityEstimator
 import numpy as np
-from Arm_greedy import Arm
+from Arm_greedy import arm
 import pickle
 from scipy.stats import uniform, randint
 
@@ -23,7 +23,7 @@ class BAI(object):
             params2.update({'eta':uniform(space[i],space[i+1]-space[i])})
             model = Worker(params2, data)
             print('Arm ', i, 'will contain Hyperband object with eta in [', space[i],',',space[i+1],']')
-            self.arms[i] = Arm(HyperBand(model, params, R, eta))
+            self.arms[i] = arm(HyperBand(model, params, R, eta))
         return
 
     def get_next_arm(self):

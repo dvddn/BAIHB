@@ -9,7 +9,7 @@ from scipy.stats import uniform, randint
 import time
 import pickle 
 import xgboost as xgb
-from BAI_greedy import BAI
+from BAI import BAI
 
 def main():
     data = pickle.load(open("mydata.p", "rb"))
@@ -18,17 +18,18 @@ def main():
               'colsample_by_tree': uniform(0.5,0.5),
               'gamma': discrete_uniform(0, 0, 5, 0.3),
               'lambda':discrete_uniform(0,0,5,0.1),
-              'alpha': discrete_uniform(0,0,5,0.3),
-              'eta': log_uniform(-3,-0.30103)}
+              'alpha': discrete_uniform(0,0,5,0.3)
+              }
     eta_interval = [0.001,0.5]
  
-    model = Worker(params, data)
-    hb = HyperBand(model, params, R=27)
-    hb.run_n(20)
+    #model = Worker(params, data)
+    #hb = HyperBand(model, params, R=27)
+    #hb.run_n(20)
     #print(hb.evals)
-    #baihb = BAI(5,params,eta_interval,27,3.0,0.3)
-    #baihb.run_n(10)
-    with open('results_log.pkl', 'wb') as handle:
-        pickle.dump(hb, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    baihb = BAI(5,params,eta_interval,9,3.0)
+    baihb.run_n(20)
+    with open('results_TS_2.pkl', 'wb') as handle:
+        pickle.dump(baihb, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 if __name__ == '__main__':
     main()

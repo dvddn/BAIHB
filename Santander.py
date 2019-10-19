@@ -13,9 +13,10 @@ matplotlib.use("Agg") #Needed to save figures
 from sklearn.model_selection import train_test_split
 import xgboost as xgb
 from sklearn.metrics import roc_auc_score
+import pickle
 
-training = pd.read_csv(r"C:\Users\dinello\Downloads\train.csv", index_col=0)
-test = pd.read_csv(r"C:\Users\dinello\Downloads\test.csv", index_col=0)
+training = pd.read_csv("/home/dine/Downloads/train.csv", index_col=0)
+test = pd.read_csv("/home/dine/Downloads/test.csv", index_col=0)
 
 print(training.shape)
 print(test.shape)
@@ -65,23 +66,7 @@ print (features)
 
 X_sel = X[features]
 
-X_train, X_test, y_train, y_test = train_test_split(X_sel, y, random_state=1301, stratify=y, test_size=0.4)
+data = [X_sel, y]
 
-X_train
-
-ratio = float(np.sum(y == 1)) / np.sum(y==0)
-
-clf = xgb.XGBClassifier(missing=9999999999,
-                max_depth = 5,
-                n_estimators=1000,
-                learning_rate=0.01, 
-                nthread=-1,
-                subsample=1.0,
-                colsample_bytree=0.5,
-                min_child_weight = 3,
-                scale_pos_weight = ratio,
-                reg_alpha=0.03,
-                seed=1301)
-                
-clf.fit(X_train, y_train, early_stopping_rounds=100, eval_metric="rmse",
-        eval_set=[(X_train, y_train), (X_test, y_test)], verbose=True)
+with open('/home/dine/Documents/Python_code/BAIHB/BAIHB/mydata.p', 'wb') as handle:
+    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
