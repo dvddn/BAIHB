@@ -1,4 +1,7 @@
 *.pkl
 *.p
+*.csv
+model*
 DATA
 MODELS
+__pychache__

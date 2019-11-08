@@ -3,16 +3,17 @@ import numpy as np
 from ConfigGenerator import config_generator
 import pandas as pd
 import os
+from scipy.stats import uniform
 
 class HyperBand(object):
 
-    def __init__(self, model, config_gen, R, eta=3.0):
+    def __init__(self, model, params, R, eta=3.0):
         self.R = R
         self.eta = eta
         self.s_max = int(math.log(self.R, self.eta))
         self.B = (self.s_max + 1)*self.R
         self.model = model
-        self.config_gen = config_gen
+        self.config_gen = config_generator(params)
         self.evals = pd.DataFrame()
         print("HB object created!")
 
@@ -29,7 +30,7 @@ class HyperBand(object):
 
     def run(self):
         print("Running HB")
-        for s in np.arange(self.s_max, 0, -1):
+        for s in np.arange(self.s_max, -1, -1):
             n = self.B*(self.eta**s)/(self.R*(s+1))//1
             r = self.R*self.eta**(-s)
             T = self.successive_halvings(n,r,s)
@@ -46,7 +47,8 @@ class HyperBand(object):
             old_r = r_i
             r_i = r * (self.eta ** i)
             d_i = r_i - old_r
-            T.L = T.apply(lambda x: self.model.run(x.conf, d_i, old_r, False, x.Id), axis=1)
+            T.L = uniform.rvs(0,1)
+            print(s, i, n_i, r_i)
             if i < s:
                 T = self.top_k(T, int(n_i/self.eta))
         self.evals = pd.concat([self.evals, T])

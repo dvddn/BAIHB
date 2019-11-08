@@ -68,5 +68,26 @@ X_sel = X[features]
 
 data = [X_sel, y]
 
-with open('/home/dine/Documents/Python_code/BAIHB/BAIHB/mydata.p', 'wb') as handle:
-    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+#with open('/home/dine/Documents/Python_code/BAIHB/BAIHB/mydata.p', 'wb') as handle:
+#    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+test['n0'] = (test == 0).sum(axis=1)
+# test['logvar38'] = test['var38'].map(np.log1p)
+# # Encode var36 as category
+# test['var36'] = test['var36'].astype('category')
+# test = pd.get_dummies(test)
+test_normalized = normalize(test, axis=0)
+pca = PCA(n_components=2)
+test_pca = pca.fit_transform(test_normalized)
+test['PCA1'] = test_pca[:,0]
+test['PCA2'] = test_pca[:,1]
+sel_test = test[features]    
+
+with open('/home/dine/Documents/Python_code/BAIHB/BAIHB/test.pkl', 'wb') as handle:
+    pickle.dump(sel_test, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+#y_pred = clf.predict_proba(sel_test, ntree_limit=clf.best_iteration)
+
+#submission = pd.DataFrame({"ID":test.index, "TARGET":y_pred[:,1]})
+#submission.to_csv("submission.csv", index=False)

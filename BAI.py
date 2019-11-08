@@ -1,27 +1,32 @@
 import numpy as np
 from Hyperband import HyperBand
 from Worker_NEW import Worker
+from ConfigGenerator import config_generator
 #from KDE import DensityEstimator
 import numpy as np
 from Arm import Arm
 import pickle
-from scipy.stats import uniform
+from scipy.stats import uniform,randint
 
 class BAI(object):
-    def __init__(self, n, params, interval, R, eta):
-        self.n = n
-        self.arms = [None]*n
+    def __init__(self, nn, params, interval, R, eta):
+        self.n = nn*3
+        self.arms = [None]*self.n
         self.best = 0
-
-        space = np.logspace(np.log10(interval[0]), np.log10(interval[1]), self.n+1)
+        
+        depths = [[2,4],[4,8],[8,15]]
+        space = np.logspace(np.log10(interval[0]), np.log10(interval[1]), nn+1)
         data = self.get_data()
         
-        for i in range(n):
-            params2 = params.copy()
-            params2.update({'eta':uniform(space[i],space[i+1]-space[i])})
-            model = Worker(params2, data)
-            print('Arm ', i, 'will contain Hyperband object with eta in [', space[i],',',space[i+1],']')
-            self.arms[i] = Arm(HyperBand(model, params, R, eta), 0.5, 1, 1, 1)
+        for i in range(int(self.n/3)):
+            for j in range(3):
+                params2 = params.copy()
+                params2.update({'max_depth':randint(depths[j][0],depths[j][1])})
+                params2.update({'eta':uniform(space[i],space[i+1]-space[i])})
+                model = Worker(params2, data)
+                cg = config_generator(params2)
+                print('Arm {} will contain Hyperband object with eta in [{},{}] and depth in [{},{}]'.format(3*i+j,space[i],space[i+1],depths[j][0],depths[j][1]))
+                self.arms[3*i+j] = Arm(HyperBand(model, cg, R, eta), 0.8, 1, 1, 1)
         return
 
     def get_next_arm(self):

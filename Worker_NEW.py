@@ -4,13 +4,15 @@ import numpy as np
 import pickle
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss, roc_auc_score
+from scipy.stats import randint
 
 class Worker(object):
     def __init__(self, params, data):
         self.params = params
         self.data = data
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(data[0], data[1], random_state=1301, stratify=data[1], test_size=0.4)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(data[0], data[1], random_state=randint(1,10000).rvs(), stratify=data[1], test_size=0.33)
         self.ratio = float(np.sum(data[1] == 1)) / np.sum(data[1]==0)
+        self.mult = 30
         return
 
     def run(self, config_vals, d, r, return_round=False, Id=-1):
@@ -20,27 +22,27 @@ class Worker(object):
         d_val = xgb.DMatrix(self.X_test, label=self.y_test)
         evallist = [(d_train, 'train'), (d_val,'eval')]
         t.append(('scale_pos_weight',self.ratio))
-        t.append(('eval_metric','aucpr'))
+        t.append(('eval_metric','auc'))
         t.append(('objective','binary:logistic'))
         t.append(('n_jobs',-1))
         early = None
-        if (r+d)*30 > 200:
-            early = int(r+d)*30/3
+        if (r+d)*self.mult > self.mult*10:
+            early = int(r+d)*self.mult/3
         try:
             with open('./MODELS/model_{}_{}.pickle'.format(Id, int(r)), 'rb') as f:
                 bst = pickle.load(f)
-            print('Running XGB, id =', Id, ' budget: ', int(d)*30 )
-            bst = xgb.train(params=t, dtrain=d_train, num_boost_round=int(d)*30, 
+            print('Running XGB, id =', Id, ' budget: ', int(d)*self.mult )
+            bst = xgb.train(params=t, dtrain=d_train, num_boost_round=int(d)*self.mult, 
                             evals=evallist, early_stopping_rounds=early, 
                             verbose_eval=False, xgb_model=bst)
         except:
-            print('Running XGB, id =', Id, ' budget: ', int(r+d)*30 )
-            bst = xgb.train(params=t, dtrain=d_train, num_boost_round=int(r+d)*30, 
+            print('Running XGB, id =', Id, ' budget: ', int(r+d)*self.mult )
+            bst = xgb.train(params=t, dtrain=d_train, num_boost_round=int(r+d)*self.mult, 
                             evals=evallist, early_stopping_rounds=early, 
                             verbose_eval=False)
             best_iter = bst.attr('best_iteration')
             if best_iter is None:
-                best_iter = int(r+d)*100
+                best_iter = int(r+d)*self.mult
         if id!=-1:
             with open('./MODELS/model_{}_{}'.format(Id, int(r+d)), 'wb') as handle:
                 pickle.dump(bst, handle, protocol=pickle.HIGHEST_PROTOCOL)

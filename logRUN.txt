@@ -1,0 +1,26 @@
+2019-11-01 15:07:08.622057
+Arm 0 will contain Hyperband object with eta in [0.004999999999999999,0.019574338205844314] and depth in [2,4]
+HB object created!
+Arm 1 will contain Hyperband object with eta in [0.004999999999999999,0.019574338205844314] and depth in [4,8]
+HB object created!
+Arm 2 will contain Hyperband object with eta in [0.004999999999999999,0.019574338205844314] and depth in [8,15]
+HB object created!
+Arm 3 will contain Hyperband object with eta in [0.019574338205844314,0.0766309432393553] and depth in [2,4]
+HB object created!
+Arm 4 will contain Hyperband object with eta in [0.019574338205844314,0.0766309432393553] and depth in [4,8]
+HB object created!
+Arm 5 will contain Hyperband object with eta in [0.019574338205844314,0.0766309432393553] and depth in [8,15]
+HB object created!
+Arm 6 will contain Hyperband object with eta in [0.0766309432393553,0.29999999999999993] and depth in [2,4]
+HB object created!
+Arm 7 will contain Hyperband object with eta in [0.0766309432393553,0.29999999999999993] and depth in [4,8]
+HB object created!
+Arm 8 will contain Hyperband object with eta in [0.0766309432393553,0.29999999999999993] and depth in [8,15]
+HB object created!
+RUNNING ARM  0
+Running HB
+Running XGB, id = 1  budget:  30
+Running XGB, id = 2  budget:  30
+Running XGB, id = 3  budget:  30
+Running XGB, id = 4  budget:  30
+Running XGB, id = 5  budget:  30
