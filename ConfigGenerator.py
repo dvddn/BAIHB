@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import uniform
+from scipy.stats import uniform, randint
 
 class config_generator(object):
 
@@ -55,3 +55,14 @@ class log_uniform():
             return np.power(self.base, unif.rvs(random_state=random_state))
         else:
             return np.power(self.base, unif.rvs(size=size, random_state=random_state))    
+
+class log_int():
+        
+    def rvs(self):
+        a = randint.rvs(1,4)
+        if a == 1:
+            return randint.rvs(2,4)
+        elif a == 2:
+            return randint.rvs(4,8)
+        else:
+           return randint.rvs(8,16) 

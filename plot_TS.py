@@ -33,7 +33,7 @@ def mapping2(x):
         return '4th'
 
 def plotstuff():
-    with open('results_HB_new2.pkl', 'rb') as handle:
+    with open('results_new.pkl', 'rb') as handle:
         res = pickle.load(handle)
     #%matplotlib qt
     
@@ -42,6 +42,7 @@ def plotstuff():
 #        tab = pd.concat([tab,arm.hb.evals])
     tab = res
     etas = [x[-1] for x in tab.conf]
+    trees = [x[-2] for x in tab.conf]
 
     tab['s'] = 0
     tab.reset_index(drop=True, inplace=True)
@@ -49,6 +50,7 @@ def plotstuff():
     tab.s = tab.s.apply(lambda x: mapping(x))
     tab.s = tab.s.apply(lambda x: mapping2(x))
     tab['eta'] = etas
+    tab['depth'] = trees
     tab = tab[tab.L>0.6]
 
     print(tab)
@@ -79,6 +81,36 @@ def plotstuff():
     ax3.get_yaxis().set_visible(False)
 
     plt.show()
+    
+    
+    
+    
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((10,10), (0,0), rowspan=2, colspan=8)
+    for elem in tab.s.unique():    
+        sns.kdeplot(tab.depth[tab.s == elem])
+    ax1.get_legend().remove()
+    ax1.get_xaxis().set_visible(False)
+    ax1.get_yaxis().set_visible(False)
+
+    ax2 = plt.subplot2grid((10,10), (2,0), rowspan=8, colspan=8, sharex=ax1)
+    ax2.legend('Brackets')
+    #plt.title('stock')
+    #plt.ylabel('H-L')
+    a = sns.scatterplot(tab.depth, tab.L, hue=tab.s)
+    
+    ax3 = plt.subplot2grid((10,10), (2,8), rowspan=8, colspan=2, sharey=ax2)
+    for elem in tab.s.unique():    
+        sns.kdeplot(tab.L[tab.s == elem], vertical=True)
+    #plt.ylabel('Price')
+    #plt.ylabel('MAvgs')
+    ax3.get_legend().remove()
+    ax3.get_xaxis().set_visible(False)
+    ax3.get_yaxis().set_visible(False)
+
+    plt.show()
+    
+    
 
 
 plotstuff()
