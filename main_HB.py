@@ -34,8 +34,8 @@ def main():
     eta_interval = [0.005,0.3]
  
     model = Worker(params, data)
-    hb = HyperBand(model, config_generator(params), R=81)
-    hb.run_n(25)
+    hb = HyperBand(model, config_generator(params), R=1)
+    hb.run_n(100)
 #    print(hb.evals)
 #    baihb = BAI(3,params,eta_interval,81,3.0)
 #    baihb.run_n(50)
@@ -44,7 +44,7 @@ def main():
 #    for arm in baihb.arms:
 #        tab = pd.concat([tab,arm.hb.evals])
 #    print(tab)
-    with open('results_HB_new3.py', 'wb') as handle:
+    with open('results_RS1_new.py', 'wb') as handle:
         pickle.dump(tab, handle, protocol=pickle.HIGHEST_PROTOCOL)
     print(datetime.datetime.now() - a)    
 if __name__ == '__main__':

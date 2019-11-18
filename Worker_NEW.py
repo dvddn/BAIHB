@@ -10,9 +10,9 @@ class Worker(object):
     def __init__(self, params, data):
         self.params = params
         self.data = data
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(data[0], data[1], random_state=randint(1,10000).rvs(), stratify=data[1], test_size=0.33)
+        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(data[0], data[1], random_state=0, stratify=data[1], test_size=0.33)
         self.ratio = float(np.sum(data[1] == 1)) / np.sum(data[1]==0)
-        self.mult = 30
+        self.mult = 2430
         return
 
     def run(self, config_vals, d, r, return_round=False, Id=-1):
